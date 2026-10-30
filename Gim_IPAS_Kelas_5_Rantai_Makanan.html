@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Rantai Makanan - IPAS Kelas 5</title>
+<style>
+:root{--green:#16794b;--mint:#e9f8ef;--dark:#18352a;--gold:#f5b942;--red:#c94c4c}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:linear-gradient(135deg,#dff7e8,#eaf4ff);color:var(--dark);min-height:100vh}
+.wrap{max-width:900px;margin:auto;padding:18px}.hero{background:linear-gradient(120deg,#146b45,#35a66d);color:white;border-radius:24px;padding:26px;text-align:center;box-shadow:0 10px 28px #174d3425}
+.hero h1{margin:4px 0;font-size:clamp(1.6rem,5vw,2.5rem)}.hero p{margin:8px 0 0}.panel{background:white;border-radius:20px;padding:22px;margin:18px 0;box-shadow:0 8px 22px #1d503015}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1;min-width:190px}label{font-weight:700;display:block;margin:8px 0 5px}input,select{width:100%;padding:13px;border:2px solid #d5e8dc;border-radius:12px;font:inherit}
+button{border:0;border-radius:12px;padding:12px 17px;font:700 1rem inherit;cursor:pointer;background:var(--green);color:white;transition:.18s}button:hover{transform:translateY(-2px);filter:brightness(1.07)}button:disabled{opacity:.45;cursor:not-allowed;transform:none}.secondary{background:#e8f4ed;color:var(--green)}.gold{background:var(--gold);color:#47320a}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.progress{height:12px;background:#e5eee8;border-radius:99px;overflow:hidden;margin:12px 0}.bar{height:100%;width:0;background:linear-gradient(90deg,#36a66c,#f5c451);transition:width .3s}
+.badge{background:#eaf7ef;color:#176a43;padding:7px 12px;border-radius:99px;font-weight:800}.question{font-size:1.2rem;font-weight:750;line-height:1.45;margin:18px 0}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.answer{background:#f3f8f5;color:#244333;border:2px solid #dcebe1;text-align:left;min-height:58px}.answer.correct{background:#d9f7e4;border-color:#32a567}.answer.wrong{background:#ffe3e3;border-color:#d86b6b}.feedback{min-height:48px;font-weight:700;margin:14px 0}.muted{color:#64766c;font-size:.93rem}.hidden{display:none!important}.center{text-align:center}.emoji{font-size:3rem}.certificate{width:100%;max-width:700px;border:8px double #c89b37;padding:26px;background:#fffdf4;margin:15px auto;color:#243d2d}.certificate h2{color:#176b45;font-size:2rem}.certificate .name{font-size:1.7rem;font-weight:800;border-bottom:2px solid #d5bd7a;display:inline-block;padding:8px 20px}.small{font-size:.85rem}
+@media(max-width:560px){.wrap{padding:10px}.panel{padding:16px}.answers{grid-template-columns:1fr}.hero{padding:20px}.topline{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+<div class="emoji">🌱 🐛 🐸 🦅</div>
+<h1>Petualangan Rantai Makanan</h1>
+<p>Gim Edukasi IPAS • Kelas 5 SD</p>
+<p>Jelajahi ekosistem, susun rantai makanan, dan jadilah Penjaga Alam!</p>
+</header>
+
+<section class="panel" id="start">
+<h2>🌟 Siap memulai petualangan?</h2>
+<p>Isi identitasmu terlebih dahulu. Dengarkan suara pemandu, baca soal dengan teliti, lalu pilih jawaban terbaik.</p>
+<div class="row">
+<div><label for="student">Nama siswa</label><input id="student" placeholder="Tuliskan nama lengkap" maxlength="45"></div>
+<div><label for="kelas">Kelas</label><select id="kelas"><option value="5A">5A</option><option value="5B">5B</option><option value="5">Kelas 5</option></select></div>
+</div>
+<div class="row" style="margin-top:14px">
+<button onclick="startGame()">🚀 Mulai bermain</button>
+<button class="secondary" onclick="speak('Halo, teman-teman! Selamat datang di Petualangan Rantai Makanan. Ayo belajar sambil bermain!')">🔊 Tes suara pemandu</button>
+</div>
+<p class="muted small">Suara menggunakan fitur suara pada perangkat/browser. Pilih suara Bahasa Indonesia jika tersedia.</p>
+</section>
+
+<section class="panel hidden" id="game">
+<div class="topline"><span class="badge" id="levelLabel">Level 1 dari 5</span><span class="badge">⭐ Skor: <span id="score">0</span></span></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="topline"><span class="muted" id="progressText">Soal 1 dari 10</span><button class="secondary" onclick="readQuestion()">🔊 Dengarkan soal</button></div>
+<div class="question" id="question"></div>
+<div class="answers" id="answers"></div>
+<div class="feedback" id="feedback" aria-live="polite"></div>
+<div class="topline"><span class="muted" id="explain"></span><button id="next" class="gold" onclick="nextQuestion()" disabled>Soal berikutnya ➜</button></div>
+</section>
+
+<section class="panel hidden center" id="finish">
+<div class="emoji">🏆🌿</div><h2>Petualangan selesai!</h2>
+<p id="resultText"></p>
+<div class="certificate" id="certificate">
+<div style="font-size:2.4rem">🌿 🦋 🌼</div>
+<p style="letter-spacing:3px;font-weight:800;color:#a17a26">SERTIFIKAT PENGHARGAAN</p>
+<h2>Penjaga Rantai Makanan</h2>
+<p>Diberikan kepada</p><div class="name" id="certName"></div>
+<p>Telah menyelesaikan Gim Edukasi IPAS Kelas 5</p>
+<p><b>Materi: Rantai Makanan dan Keseimbangan Ekosistem</b></p>
+<p>Skor akhir: <b id="certScore"></b></p>
+<p>Tanggal penyelesaian: <b id="certDate"></b></p>
+<div style="display:flex;justify-content:space-between;margin-top:32px;text-align:center;gap:20px"><div><p>Teruslah belajar!</p><b>Guru Kelas</b></div><div><p>🌱</p><b>Penjaga Alam Cilik</b></div></div>
+</div>
+<div class="row"><button onclick="downloadCertificate()">⬇️ Unduh sertifikat (PNG)</button><button class="secondary" onclick="location.reload()">↻ Main lagi</button></div>
+</section>
+<footer class="center muted small" style="padding:12px">Belajar IPAS dengan gembira • Jaga alam, jaga kehidupan 🌏</footer>
+</div>
+<script>
+const questions=[
+{l:1,q:"Dalam rantai makanan, makhluk hidup yang dapat membuat makanannya sendiri disebut ...",a:["Produsen","Konsumen","Pengurai","Pemangsa"],c:0,e:"Produsen, seperti rumput dan tumbuhan hijau, membuat makanan sendiri melalui fotosintesis."},
+{l:1,q:"Perhatikan urutan: rumput → belalang → katak → ular. Siapakah konsumen tingkat pertama?",a:["Katak","Belalang","Ular","Rumput"],c:1,e:"Belalang memakan rumput, sehingga menjadi konsumen tingkat pertama."},
+{l:2,q:"Apa arti tanda panah (→) pada rantai makanan?",a:["Hewan mengejar hewan","Arah perpindahan energi/makanan","Arah tempat tinggal","Tumbuhan tumbuh"],c:1,e:"Panah menunjukkan aliran energi dari organisme yang dimakan menuju pemakannya."},
+{l:2,q:"Pada rantai padi → tikus → ular → elang, organisme yang berperan sebagai produsen adalah ...",a:["Tikus","Ular","Padi","Elang"],c:2,e:"Padi adalah tumbuhan yang membuat makanan sendiri, jadi berperan sebagai produsen."},
+{l:3,q:"Jika jumlah ular di sawah menurun drastis, kemungkinan yang terjadi adalah ...",a:["Tikus bertambah","Padi langsung bertambah","Elang pasti bertambah","Semua organisme hilang"],c:0,e:"Lebih sedikit ular sebagai pemangsa dapat membuat populasi tikus meningkat."},
+{l:3,q:"Jamur dan bakteri membantu ekosistem karena berperan sebagai ...",a:["Produsen","Konsumen puncak","Pengurai","Herbivor"],c:2,e:"Pengurai memecah sisa makhluk hidup menjadi zat hara yang dapat dimanfaatkan kembali oleh tumbuhan."},
+{l:4,q:"Di kebun terdapat tanaman, ulat, burung, dan ular. Jika semua burung hilang, dampak yang paling masuk akal adalah ...",a:["Ulat dapat meningkat","Tanaman berubah menjadi hewan","Ular menjadi produsen","Tidak ada perubahan apa pun"],c:0,e:"Burung memangsa ulat. Jika burung berkurang, ulat dapat meningkat dan lebih banyak memakan tanaman."},
+{l:4,q:"Mengapa satu ekosistem memiliki banyak rantai makanan yang saling berhubungan?",a:["Agar semua hewan sama","Karena organisme dapat memiliki lebih dari satu sumber makanan atau pemangsa","Karena tumbuhan tidak dibutuhkan","Agar energi berhenti"],c:1,e:"Hubungan beberapa rantai makanan membentuk jaring-jaring makanan karena organisme dapat memiliki beberapa hubungan makan."},
+{l:5,q:"Petani menggunakan pestisida berlebihan sehingga banyak serangga mati. Apa dampak yang mungkin terjadi pada pemakan serangga?",a:["Makanan berkurang","Makanan selalu bertambah","Menjadi produsen","Tidak membutuhkan makanan"],c:0,e:"Jika serangga berkurang, hewan pemakan serangga dapat kekurangan sumber makanan."},
+{l:5,q:"Tindakan terbaik untuk menjaga keseimbangan rantai makanan di lingkungan adalah ...",a:["Memburu semua ular","Menebang semua pohon","Menjaga habitat dan tidak membunuh satwa sembarangan","Membuang sampah ke sungai"],c:2,e:"Menjaga habitat dan melindungi makhluk hidup membantu mempertahankan keseimbangan ekosistem."}
+];
+let index=0,score=0,answered=false;
+function speak(text){if(!('speechSynthesis'in window)){alert('Fitur suara belum didukung browser ini.');return;}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang='id-ID';u.rate=.92;u.pitch=1;let voices=speechSynthesis.getVoices();let v=voices.find(x=>x.lang&&x.lang.toLowerCase().startsWith('id'));if(v)u.voice=v;speechSynthesis.speak(u);}
+function tone(ok){try{let ctx=new(window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=ok?740:220;g.gain.value=.08;o.start();o.stop(ctx.currentTime+(ok?.18:.28));}catch(e){}}
+function startGame(){let n=document.getElementById('student').value.trim();if(!n){alert('Silakan isi nama siswa terlebih dahulu.');return;}document.getElementById('start').classList.add('hidden');document.getElementById('game').classList.remove('hidden');showQuestion();speak('Selamat datang, '+n+'. Mari kita mulai petualangan rantai makanan!');}
+function showQuestion(){answered=false;let q=questions[index];document.getElementById('levelLabel').textContent='Level '+q.l+' dari 5';document.getElementById('score').textContent=score;document.getElementById('progressText').textContent='Soal '+(index+1)+' dari '+questions.length;document.getElementById('bar').style.width=(index/questions.length*100)+'%';document.getElementById('question').textContent=q.q;document.getElementById('feedback').textContent='';document.getElementById('explain').textContent='';document.getElementById('next').disabled=true;document.getElementById('next').textContent=index===questions.length-1?'Lihat hasil 🏆':'Soal berikutnya ➜';let box=document.getElementById('answers');box.innerHTML='';q.a.forEach((a,i)=>{let b=document.createElement('button');b.className='answer';b.textContent=String.fromCharCode(65+i)+'. '+a;b.onclick=()=>choose(i,b);box.appendChild(b);});}
+function readQuestion(){let q=questions[index];speak('Pertanyaan. '+q.q+'. Pilih salah satu jawaban. '+q.a.map((a,i)=>String.fromCharCode(65+i)+'. '+a).join('. '));}
+function choose(i,btn){if(answered)return;answered=true;let q=questions[index],buttons=[...document.querySelectorAll('.answer')];buttons.forEach((b,j)=>{b.disabled=true;if(j===q.c)b.classList.add('correct');});let fb=document.getElementById('feedback');if(i===q.c){score+=10;btn.classList.add('correct');fb.textContent='✓ Hebat! Jawabanmu benar. +10 poin';tone(true);speak('Hebat! Jawabanmu benar.');}else{btn.classList.add('wrong');fb.textContent='Belum tepat. Jawaban benar: '+q.a[q.c]+'.';tone(false);speak('Belum tepat. Jawaban yang benar adalah '+q.a[q.c]+'.');}document.getElementById('score').textContent=score;document.getElementById('explain').textContent=q.e;document.getElementById('next').disabled=false;}
+function nextQuestion(){if(index<questions.length-1){index++;showQuestion();}else finish();}
+function finish(){document.getElementById('game').classList.add('hidden');document.getElementById('finish').classList.remove('hidden');document.getElementById('bar').style.width='100%';let name=document.getElementById('student').value.trim(),kelas=document.getElementById('kelas').value,percent=score;document.getElementById('resultText').textContent=name+' dari kelas '+kelas+', kamu memperoleh '+score+' dari 100 poin. '+(score>=80?'Luar biasa! Terus pertahankan semangat belajarmu!':score>=60?'Bagus! Terus berlatih agar semakin hebat!':'Terus semangat! Belajar dan mencoba lagi akan membuatmu semakin pintar!');document.getElementById('certName').textContent=name+' • Kelas '+kelas;document.getElementById('certScore').textContent=score+'/100';document.getElementById('certDate').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});speak('Selamat, '+name+'. Kamu telah menyelesaikan seluruh level. Skor akhir '+score+' dari 100. Sertifikatmu siap diunduh.');}
+function downloadCertificate(){let el=document.getElementById('certificate'),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');canvas.width=1400;canvas.height=900;ctx.fillStyle='#fffdf4';ctx.fillRect(0,0,1400,900);ctx.strokeStyle='#c89b37';ctx.lineWidth=18;ctx.strokeRect(35,35,1330,830);ctx.lineWidth=4;ctx.strokeRect(58,58,1284,784);ctx.textAlign='center';ctx.fillStyle='#a17a26';ctx.font='bold 34px Georgia';ctx.fillText('SERTIFIKAT PENGHARGAAN',700,175);ctx.fillStyle='#176b45';ctx.font='bold 68px Georgia';ctx.fillText('Penjaga Rantai Makanan',700,290);ctx.fillStyle='#243d2d';ctx.font='32px Arial';ctx.fillText('Diberikan dengan bangga kepada',700,390);ctx.font='bold 54px Arial';ctx.fillText(document.getElementById('certName').textContent,700,485);ctx.font='30px Arial';ctx.fillText('Telah menyelesaikan Gim Edukasi IPAS Kelas 5',700,565);ctx.font='bold 34px Arial';ctx.fillText('Skor akhir: '+document.getElementById('certScore').textContent,700,640);ctx.font='28px Arial';ctx.fillText('Tanggal: '+document.getElementById('certDate').textContent,700,700);ctx.font='42px Arial';ctx.fillText('🌿   🦋   🌼',700,790);let a=document.createElement('a');a.download='Sertifikat-Rantai-Makanan.png';a.href=canvas.toDataURL('image/png');a.click();}
+if('speechSynthesis'in window)speechSynthesis.onvoiceschanged=()=>{};
+</script>
+</body>
+</html>
